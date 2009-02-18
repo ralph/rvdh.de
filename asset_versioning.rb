@@ -5,6 +5,8 @@ require 'rubygems'
 # require 'git'
 require "ftools"
 
+INDEX_FILE = "public/index.html"
+
 class Asset
   def initialize(filename)
     @filename = filename
@@ -27,7 +29,7 @@ class Asset
   def version_control!
     File.copy(filename(:full), filename(:versioned_full))
     lines = []
-    File.open("index.html", "r") do |file|
+    File.open(INDEX_FILE, "r") do |file|
       lines = file.readlines
     end
     lines.each_with_index do |line, i|
@@ -35,7 +37,7 @@ class Asset
         lines[i] = line.sub(filename, filename(:versioned))
       end
     end
-    File.open("index.html", "r+") do |file|
+    File.open(INDEX_FILE, "r+") do |file|
       file << lines
     end
   end
