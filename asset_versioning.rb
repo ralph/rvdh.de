@@ -10,19 +10,29 @@ class Asset
     @filename = filename
   end
   
-  def versioned_filename
-    @filename.split(".").insert(-2, sha).join(".")
+  def filename(option = :regular)
+    public_dir = "public/"
+    case
+    when option == :regular
+      @filename
+    when option == :versioned
+      @filename.split(".").insert(-2, sha).join(".")
+    when option == :full
+      public_dir + @filename
+    when option == :versioned_full
+      public_dir + @filename.split(".").insert(-2, sha).join(".")
+    end
   end
   
   def version_control!
-    File.copy(@filename, versioned_filename)
+    File.copy(filename(:full), filename(:versioned_full))
     lines = []
     File.open("index.html", "r") do |file|
       lines = file.readlines
     end
     lines.each_with_index do |line, i|
-      if line.include?(@filename)
-        lines[i] = line.sub(@filename, versioned_filename)
+      if line.include?(filename)
+        lines[i] = line.sub(filename, filename(:versioned))
       end
     end
     File.open("index.html", "r+") do |file|
@@ -33,7 +43,7 @@ class Asset
   private
   def sha
     # Git.open(".").gblob(@filename).log.first.sha
-    `git log -n 1 #{@filename}`[7,40]
+    `git log -n 1 #{filename(:full)}`[7,40]
   end
 end
 
