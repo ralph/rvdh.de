@@ -1,7 +1,8 @@
 #!/usr/bin/env ruby -wKU
 
 require 'rubygems'
-require 'git'
+# Ruby git gives me lots of strange errors
+# require 'git'
 require "ftools"
 
 class Asset
@@ -31,7 +32,8 @@ class Asset
 
   private
   def sha
-    Git.open(".").gblob(@filename).log.first.sha
+    # Git.open(".").gblob(@filename).log.first.sha
+    `git log #{@filename}|egrep -m 1 'commit (\\w{40})'`[-41,40]
   end
 end
 
