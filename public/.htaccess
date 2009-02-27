@@ -1,1 +1,5 @@
 redirect 301 /vdh_flickr http://vdhflickr.rvdh.de/vdh_flickr
+
+ExpiresDefault "access plus 1 year"
+ExpiresByType text/html A0
+FileETag none
