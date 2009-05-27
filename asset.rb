@@ -6,7 +6,7 @@ class Asset
   end
   
   def filename(option = "")
-    :versioned == option ? @filename.split(".").insert(-2, sha).join(".") : @filename
+    :versioned == option ? @filename.split(".").insert(-2, sha[1..8]).join(".") : @filename
   end
   
   def filepath(option = "")
@@ -16,16 +16,20 @@ class Asset
   def version_control!
     File.copy(filepath, filepath(:versioned))
     lines = []
-    File.open(INDEX_FILE, "r") do |file|
-      lines = file.readlines
+    LAYOUTS.each do |layout|
+      File.open(layout, "r") do |file|
+        lines = file.readlines
+      end
     end
     lines.each_with_index do |line, i|
       if line.include?(filename)
         lines[i] = line.sub(filename, filename(:versioned))
       end
     end
-    File.open(INDEX_FILE, "r+") do |file|
-      file << lines
+    LAYOUTS.each do |layout|
+      File.open(layout, "r+") do |file|
+        file << lines
+      end
     end
   end
 
